@@ -1,0 +1,14 @@
+{
+  "name": "serverless-rest-api",
+  "version": "1.0.0",
+  "description": "Serverless REST HTTP API for CRUD operations on DynamoDB",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Martin Njalale",
+  "license": "ISC",
+  "dependencies": {
+    "uuid": "^2.0.3"
+  }
+}

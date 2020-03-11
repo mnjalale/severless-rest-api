@@ -3,17 +3,60 @@ service: serverless-rest-api
 provider:
   name: aws
   runtime: nodejs12.x
+  environment:
+    DYNAMO_TABLE: "PetTable" # ${self:service}-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: "Allow"
       Action:
+        - dynamodb:Query
+        - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:OtherPermissions
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:oversimplified:PetTable"
+      # Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 functions:
-  hello:
-    handler: handler.hello
+  create:
+    handler: api/pets/create.create
+    events:
+      - http:
+          path: pets
+          method: post
+          cors: true
+
+  list:
+    handler: api/pets/list.list
+    events:
+      - http:
+          path: pets
+          method: get
+          cors: true
+
+  get:
+    handler: api/pets/get.get
+    events:
+      - http:
+          path: pets/{id}
+          method: get
+          cors: true
+
+  update:
+    handler: api/pets/update.update
+    events:
+      - http:
+          path: pets/{id}
+          method: put
+          cors: true
+
+  delete:
+    handler: api/pets/delete.delete
+    events:
+      - http:
+          path: pets/{id}
+          method: delete
+          cors: true
 
 resources:
   Resources:
@@ -30,4 +73,4 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: PetTable # Same as in IAMRoleStatement
+        TableName: "PetTable" # ${self:provider.environment.DYNAMODB_TABLE} # Same as in IAMRoleStatement
