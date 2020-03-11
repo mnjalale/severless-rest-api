@@ -1,0 +1,33 @@
+service: serverless-rest-api
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:OtherPermissions
+      Resource: "arn:aws:dynamodb:oversimplified:PetTable"
+
+functions:
+  hello:
+    handler: handler.hello
+
+resources:
+  Resources:
+    PetTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain # Keeps around the DynamoDB resource when we redeploy/destroy
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: PetTable # Same as in IAMRoleStatement
